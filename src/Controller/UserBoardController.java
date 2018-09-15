@@ -1,5 +1,6 @@
 package Controller;
 
+import application.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -66,7 +67,11 @@ public class UserBoardController implements Initializable {
 	private Label arrow;
 	
 	
-	private int cuPosX, cuPosY, preX,preY, facing, goldCount,arrowCount;
+	private int cuPosX, cuPosY, preX,preY, facing, goldCount,arrowCount,changeX,changeY;
+	
+	private String imagePath;
+	
+	private Direction currentDirection;
 	
 	@SuppressWarnings("static-access")
 	@Override
@@ -74,6 +79,13 @@ public class UserBoardController implements Initializable {
 		// TODO Auto-generated method stub
 		
 		WampusWorldGenerator wwg = new WampusWorldGenerator();
+		
+		imagePath = util.EAST_DIR_IMAGE;
+		
+		
+		changeX=0;
+		changeY=1;
+		currentDirection = Direction.EAST;
 		
 		cuPosX = 0; cuPosY = 0; facing = 1; goldCount = util.NUMBER_OF_GOLD; arrowCount = util.NUMBER_OF_ARROW;
 		
@@ -94,9 +106,9 @@ public class UserBoardController implements Initializable {
 				
 				sp.getChildren().add(getImageView("/image/floor.png"));
 				
-				if( ! cell.getCellMessage().equals(util.EMPTY) ) {
+				if( cell.getCellEffect()!= null && !cell.getCellEffect().equals(util.GLITTER) ) {
 					
-					Label label = new Label(cell.getCellMessage());
+					Label label = new Label(cell.getCellEffect());
 					label.setTextFill(Color.web("#ffffff"));
 					sp.getChildren().add(label);
 				}
@@ -111,14 +123,14 @@ public class UserBoardController implements Initializable {
 					
 					sp.getChildren().add(getImageView("/image/wall.png"));
 					
-					cell.setCellHide(util.HIDE);
+					cell.setIsVisited(false);
 				}
 				
 				else {
 					
-					sp.getChildren().add(getImageView("/image/player_facing_to_down.png"));
+					sp.getChildren().add(getImageView(imagePath));
 					
-					cell.setCellHide(util.OPEN);
+					cell.setIsVisited(true);
 				}
 				/*
 				grid.setRowIndex(sp, i);
@@ -151,135 +163,190 @@ public class UserBoardController implements Initializable {
 		return imageView;
 	}
 	
-	
-	public void downAction(ActionEvent event) throws IOException {
+
+	public void rightAction(ActionEvent event) throws IOException {
 		
-		downActionExecute();
+		rightActionExecute();
+		
+		
+	}
+	
+	
+	private void rightActionExecute() {
+		// TODO Auto-generated method stub
+		buttonDisable(true);
+		
+		currentDirection = getTheRightOfTheCurrentDirection(currentDirection);
+		
+		changeUpdatingCoordinate(currentDirection);
+		
+		updateImage(currentDirection);
+		
+		System.out.println(cuPosX+"          "+cuPosY+"       "+changeX+"         "+changeY+"            "+currentDirection);
+		
+		buttonDisable(false);
 		
 	}
 
 
-	private void downActionExecute() throws IOException {
+	private void updateImage(Direction currentDirection) {
 		// TODO Auto-generated method stub
-		buttonDisable(true);
 		
-		preX = cuPosX; preY = cuPosY;
+		imagePath = getImagePath(currentDirection);
 		
-		if(facing!=1) {
-			
-			rotateAgent(cuPosX,cuPosY,"/image/player_facing_to_down.png");
-			
-			facing = 1;
-		}
+		StackPane curCellView;
 		
-		else if(cuPosX+1 < util.ROW ) {
-			
-			cuPosX +=1;
-			
-			makeTransition(cuPosX,cuPosY,"/image/player_facing_to_down.png");
-			
-		}
+		curCellView = getCellView(cuPosX, cuPosY);
 		
-		buttonDisable(false);
+		curCellView.getChildren().remove(curCellView.getChildren().size()-1);
+		
+		curCellView.getChildren().add(getImageView(imagePath));
 		
 	}
 
 
 	public void leftAction(ActionEvent event) throws IOException {
 		
+		
 		leftActionExecute();
 			
 	}
 	
 	
-	private void leftActionExecute() throws IOException {
+
+	private void leftActionExecute() {
 		// TODO Auto-generated method stub
 		buttonDisable(true);
 		
-		preX = cuPosX; preY = cuPosY;
+		currentDirection = getTheLeftOfTheCurrentDirection(currentDirection);
 		
-		if(facing!=2) {
-			
-			rotateAgent(cuPosX, cuPosY, "/image/player_facing_to_left.png");
-			
-			facing = 2;
-		}
+		changeUpdatingCoordinate(currentDirection);
 		
-		else if(cuPosY-1 > -1 ) {
-			
-			cuPosY -=1;
-			
-			makeTransition(cuPosX, cuPosY, "/image/player_facing_to_left.png");
-			
-		}
+		updateImage(currentDirection);
+		
+		System.out.println(cuPosX+"          "+cuPosY+"       "+changeX+"         "+changeY+"            "+currentDirection);
 		
 		buttonDisable(false);
 	}
 
 
-	public void upAction(ActionEvent event) throws IOException {
+	private Direction getTheLeftOfTheCurrentDirection(Direction currentDirection) {
+		// TODO Auto-generated method stub
 		
-		upActionExecute();
+		switch (currentDirection) {
+			case NORTH:
+				return Direction.WEST;
+		
+			case EAST:
+				return Direction.NORTH;
 			
+			case SOUTH:
+				return Direction.EAST;
+				
+			default:
+				return Direction.SOUTH;
+			
+		}
+		//return currentDirection;
+		
+	}
+
+	
+	private Direction getTheRightOfTheCurrentDirection(Direction currentDirection) {
+		// TODO Auto-generated method stub
+		
+		switch (currentDirection) {
+			case NORTH:
+				return Direction.EAST;
+		
+			case EAST:
+				return Direction.SOUTH;
+			
+			case SOUTH:
+				return Direction.WEST;
+				
+			default:
+				return Direction.NORTH;
+			
+		}
+		//return currentDirection;
+		
+	}
+	
+	private void changeUpdatingCoordinate(Direction currentDirection) {
+		// TODO Auto-generated method stub
+		
+		switch (currentDirection) {
+			
+			case NORTH:
+				changeX = -1;
+				changeY = 0;
+				break;
+				
+			case EAST:
+				changeX = 0;
+				changeY = 1;
+				break;
+				
+			case SOUTH:
+				changeX = 1;
+				changeY = 0;
+				break;
+				
+			case WEST:
+				changeX = 0;
+				changeY = -1;
+				break;
+				
+			default:
+				break;
+		
+		}
+		
+	}
+	
+	private String getImagePath(Direction currentDirection) {
+		// TODO Auto-generated method stub
+		
+		switch (currentDirection) {
+			case NORTH:
+				return util.NORTH_DIR_IMAGE;
+		
+			case EAST:
+				return util.EAST_DIR_IMAGE;
+			
+			case SOUTH:
+				return util.SOUTH_DIR_IMAGE;
+				
+			default:
+				return util.WEST_DRI_IMAGE;
+		}
+		
 	}
 	
 	
-	private void upActionExecute() throws IOException {
+	public void forwardAction(ActionEvent event) throws IOException {
+		
+		forwardActionExecute();
+	}
+	
+	
+	private void forwardActionExecute() throws IOException {
 		// TODO Auto-generated method stub
 		buttonDisable(true);
-		
 		preX = cuPosX; preY = cuPosY;
 		
-		if(facing!=3) {
-			
-			rotateAgent(cuPosX, cuPosY, "/image/player_facing_to_up.png");
-			
-			facing = 3;
-		}
-		
-		else if(cuPosX-1 > -1 ) {
-			
-			cuPosX -=1;
-			
-			makeTransition(cuPosX, cuPosY, "/image/player_facing_to_up.png");
-			
+		cuPosX += changeX;
+		cuPosY += changeY;
+		if(cuPosX>-1 && cuPosX<util.ROW && cuPosY>-1 && cuPosY<util.COL) makeTransition(cuPosX, cuPosY, imagePath);
+		else {
+			cuPosX -= changeX;
+			cuPosY -= changeY;
 		}
 		
 		buttonDisable(false);
-	}
-
-
-	public void rightAction(ActionEvent event) throws IOException {
-		
-		rightActionExecute();
 		
 	}
-	
-	
-	private void rightActionExecute() throws IOException {
-		// TODO Auto-generated method stub
-		buttonDisable(true);
-		
-		preX = cuPosX; preY = cuPosY;
-		
-		if(facing!=4) {
-			
-			rotateAgent(cuPosX, cuPosY, "/image/player_facing_to_right.png");
-			
-			facing = 4;
-		}
-		
-		else if(cuPosY+1 < util.COL ) {
-			
-			cuPosY +=1;
-			
-			makeTransition(cuPosX, cuPosY, "/image/player_facing_to_right.png");
-			
-		}
-		
-		buttonDisable(false);
-	}
-
 
 	public void enterAction(ActionEvent event) {
 		
@@ -328,29 +395,9 @@ public class UserBoardController implements Initializable {
 		
 		StackPane attackingCellView = null;
 		
-		if(facing==1) {
-			
-			attackingCellView = getCellView(cuPosX+1, cuPosY);
-			
-		}
+		attackingCellView = getCellView(cuPosX, cuPosY);
 		
-		else if (facing==2) {
-			
-			attackingCellView = getCellView(cuPosX, cuPosY-1);
-			
-		}
-		
-		else if (facing==3) {
-			
-			attackingCellView = getCellView(cuPosX-1, cuPosY);
-			
-		}
-		
-		else if (facing==4) {
-			
-			attackingCellView = getCellView(cuPosX, cuPosY+1);
-			
-		}
+		Label lable = (Label) attackingCellView.getChildren().get(2);
 		
 		WorldCell cell = (WorldCell) attackingCellView.getProperties().get("info");
 		
@@ -363,10 +410,7 @@ public class UserBoardController implements Initializable {
 		
 		switch (event.getCode()) {
         case UP:    
-        	upActionExecute();
-        	break;
-        case DOWN:  
-        	downActionExecute();
+        	forwardActionExecute();
         	break;
         case LEFT:  
         	leftActionExecute();
@@ -406,13 +450,13 @@ public class UserBoardController implements Initializable {
 		
 		WorldCell cell = (WorldCell) curCellView.getProperties().get("info");
 		
-		if(cell.getCellHide().equals(util.HIDE)) {
+		if(!cell.getIsVisited()) {
 			
 			curCellView.getChildren().remove(curCellView.getChildren().size()-1);
 			
 			if(cell.getCellElement().equals(util.WAMPUS) || cell.getCellElement().equals(util.PIT) ) terminateGame();
 			
-			cell.setCellHide(util.OPEN);
+			cell.setIsVisited(true);
 			
 		}
 		
@@ -453,7 +497,7 @@ public class UserBoardController implements Initializable {
 
 	private void buttonDisable(boolean value) {
 		
-		downButton.setDisable(value);
+
 		leftButton.setDisable(value);
 		upButton.setDisable(value);
 		rightButton.setDisable(value);

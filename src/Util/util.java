@@ -14,6 +14,8 @@ public class util {
 	
 	public static final String PIT = "pit";
 	
+	public static final String GLITTER = "GLITTER";
+	
 	public static final String STENCH = "STENCH";
 	
 	public static final String BREEZE = "BREEZE";
@@ -35,4 +37,15 @@ public class util {
 	public static final int []x = {-1,1,0,0};
 	
 	public static final int []y = {0,0,1,-1};
+	
+	public static final String NORTH_DIR_IMAGE = "/image/player_facing_to_up.png";
+	
+	public static final String EAST_DIR_IMAGE = "/image/player_facing_to_right.png";
+	
+	public static final String SOUTH_DIR_IMAGE = "/image/player_facing_to_down.png";
+	
+	public static final String WEST_DRI_IMAGE = "/image/player_facing_to_left.png";
+	
+	
+	
 }

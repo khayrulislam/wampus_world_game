@@ -1,33 +1,45 @@
 package application;
 
+import java.util.HashSet;
+
+import Util.util;
+
+
 public class WorldCell {
 
-	private int x,y;
+	private int x,y,count=0;
 	
-	private String cellElement,cellMessage,cellHide;
+	private boolean isVisited;
 	
-	public WorldCell(int x, int y, String cellElement, String cellMessage) {
+	private String cellElement;
+	
+	private HashSet<String> cellEffectList = new HashSet<>();
+	
+	public WorldCell(int x, int y, String cellElement) {
 		
 		this.x = x;
 		this.y = y;
 		this.cellElement = cellElement;
-		this.cellMessage = cellMessage;
+		
 	}
-
-	public String getCellHide() {
-		return cellHide;
+	
+	
+	public void setIsVisited(boolean isVisited) {
+		this.isVisited = isVisited;
 	}
-
-	public void setCellHide(String cellHide) {
-		this.cellHide = cellHide;
+	
+	public boolean getIsVisited() {
+		return this.isVisited;
+	}
+	
+	
+	public void setCellEffect(String effect) {
+		this.cellEffectList.add(effect);
+		if(util.STENCH.equals(effect)) count++;
 	}
 
 	public void setCellElement(String cellElement) {
 		this.cellElement = cellElement;
-	}
-
-	public void setCellMessage(String cellMessage) {
-		this.cellMessage = cellMessage;
 	}
 
 	public int getX() {
@@ -42,11 +54,25 @@ public class WorldCell {
 		return cellElement;
 	}
 
-	public String getCellMessage() {
-		return cellMessage;
+	public String getCellEffect() {
+		
+		String cellEffect = "";
+		
+		for(String effect: cellEffectList) if(!effect.equals(util.GLITTER))cellEffect += effect+"\n";
+		
+		return cellEffect;
+	
 	}
 	
-	
-	
+	public boolean removeCellEffect(String effect) {
+		
+		if(cellEffectList.contains(effect)) {
+			count--;
+			if(count==0)return cellEffectList.remove(effect);
+			else return true;
+		}
+		else return false;
+		
+	}
 	
 }

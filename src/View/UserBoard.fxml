@@ -39,7 +39,7 @@
       </GridPane>
       
       
-      <Button fx:id="upButton" layoutX="691.0" layoutY="183.0" mnemonicParsing="false" onAction="#upAction" prefHeight="60.0" prefWidth="60.0">
+      <Button fx:id="upButton" layoutX="691.0" layoutY="183.0" mnemonicParsing="false" onAction="#forwardAction" prefHeight="60.0" prefWidth="60.0">
       	
       	<graphic>
       		<ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
@@ -75,19 +75,6 @@
         	</ImageView>
       	</graphic>
       	     
-      </Button>
-      
-      
-      <Button fx:id="downButton" layoutX="689.0" layoutY="303.0" mnemonicParsing="false" onAction="#downAction" prefHeight="60.0" prefWidth="60.0">
-      
-      	<graphic>
-      		<ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
-          		<image>
-            		<Image url="/image/down.png" />
-          		</image>
-        	</ImageView>
-      	</graphic>
-      	      
       </Button>
       
       

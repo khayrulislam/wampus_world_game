@@ -12,76 +12,43 @@ public class WampusWorldGenerator {
 		
 		initializeWampusWorld();
 		
-		insertElement(util.NUMBER_OF_GOLD,util.GOLD);
+		insertElement(util.NUMBER_OF_GOLD,util.GOLD,util.GLITTER);
 		
-		insertElement(util.NUMBER_OF_WAMPUS,util.WAMPUS);
+		insertElement(util.NUMBER_OF_WAMPUS,util.WAMPUS,util.STENCH);
 		
-		insertElement(util.NUMBER_OF_PIT,util.PIT);
-		
-		insertEffect(util.WAMPUS, util.STENCH);
-		
-		insertEffect(util.PIT, util.BREEZE);
+		insertElement(util.NUMBER_OF_PIT,util.PIT,util.BREEZE);
 		
 		return wamWorld;
 		
 	}
 	
-	private void insertEffect(String element,String effect) {
+	private void initializeWampusWorld() {
 		
 		for(int i=0;i<util.ROW;i++) {
 			
-			for(int j=0;j<util.COL;j++) {
-				
-				WorldCell cell = wamWorld.get(i).get(j);
-				
-				if(cell.getCellElement().equals(element)) wampusEffect(i,j,effect);
-				
-			}
+			ArrayList< WorldCell > rowList = new ArrayList<>();
 			
-		}
-		
-		
-		
-	}
-
-	private void wampusEffect(int row, int col, String effect) {
-		
-		int currentx,currenty;
-		
-		for(int i=0;i<util.DIRECTION;i++) {
-			
-			currentx = row + util.x[i];
-			
-			currenty = col + util.y[i];
-			
-			if(!isValidIndex(currentx, currenty) ) {
+			for(int j=0;j<util.COL;j++)
 				
-				WorldCell cell = wamWorld.get(currentx).get(currenty);
+				rowList.add(new WorldCell(i, j, util.EMPTY ));
 				
-				if(cell.getCellMessage().equals(util.EMPTY)) // cell.setCellMessage(util.STENCH);
-				
-					cell.setCellMessage(effect.equals(util.STENCH ) ? util.STENCH : util.BREEZE);
-					
-				
-				else if ( ! cell.getCellMessage().equals(effect) && cell.getCellMessage().length()==6) 
-					
-					cell.setCellMessage(cell.getCellMessage()+"\n"+ effect);
-					
-					//cell.setCellMessage(cell.getCellMessage()+"\n"+ util.STENCH);
-				
-			}
+			wamWorld.add(rowList);
 			
 		}
 		
 	}
 	
-	private boolean isValidIndex(int currentXCoordinate,int currentYCoordinate) {
+	private int getRandomNumber(int limit) {
 		
-		return ( currentXCoordinate < 0 || currentYCoordinate <0 
-				|| currentXCoordinate> (util.COL-1) || currentYCoordinate > (util.ROW-1)  );
-	}
+		Random rand = new Random();
 
-	private void insertElement(int numberOfElement, String elementName) {
+		int  n = rand.nextInt(limit) + 1;
+		
+		return n;
+		
+	}
+	
+	private void insertElement(int numberOfElement, String elementName,String effect) {
 		
 		int row, col, i = 0;
 		
@@ -99,6 +66,10 @@ public class WampusWorldGenerator {
 				
 				cell.setCellElement(elementName);
 				
+				if(elementName==util.GOLD) cell.setCellEffect(effect);
+				
+				else insertCellEffect(row, col, effect);
+				
 				i++;
 				
 			}
@@ -107,32 +78,34 @@ public class WampusWorldGenerator {
 		
 	}
 
-	
-	private void initializeWampusWorld() {
+
+	private void insertCellEffect(int row, int col, String effect) {
 		
-		for(int i=0;i<util.ROW;i++) {
+		int currentx,currenty;
+		
+		for(int i=0;i<util.DIRECTION;i++) {
 			
-			ArrayList< WorldCell > rowList = new ArrayList<>();
+			currentx = row + util.x[i];
 			
-			for(int j=0;j<util.COL;j++)
+			currenty = col + util.y[i];
+			
+			if(!isValidIndex(currentx, currenty) ) {
 				
-				rowList.add(new WorldCell(i, j, util.EMPTY, util.EMPTY));
+				WorldCell cell = wamWorld.get(currentx).get(currenty);
 				
-			wamWorld.add(rowList);
+				cell.setCellEffect(effect);
+				
+			}
 			
 		}
 		
 	}
 	
-	
-	private int getRandomNumber(int limit) {
+	private boolean isValidIndex(int currentXCoordinate,int currentYCoordinate) {
 		
-		Random rand = new Random();
-
-		int  n = rand.nextInt(limit) + 1;
-		
-		return n;
-		
+		return ( currentXCoordinate < 0 || currentYCoordinate <0 
+				|| currentXCoordinate> (util.COL-1) || currentYCoordinate > (util.ROW-1)  );
 	}
+
 
 }
