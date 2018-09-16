@@ -2,15 +2,15 @@ package Ai;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.TreeMap;
 
 import Agent.Agent;
 import Controller.UserBoardController;
 import Util.util;
 import application.Action;
+import application.Direction;
 
 public class ArtificialIntelegence {
-	
-	//private UserBoardController ubc;
 	
 	public static Cell [][] aiBoard = new Cell[util.ROW][util.COL];
 	
@@ -19,10 +19,10 @@ public class ArtificialIntelegence {
 	public static int count=0;
 	
 	public ArtificialIntelegence() {
-		// TODO Auto-generated constructor stub
-		//this.ubc = ubc;
+		
 		agent = Agent.getAgentInstance();
 		intializeBoard();
+		
 	}
 	
 	public Action getAction() {
@@ -32,8 +32,6 @@ public class ArtificialIntelegence {
 		updateAdjacentCell();
 		
 		
-		
-		
 		Cell cell = aiBoard[agent.getCuPosX()][agent.getCuPosY()];
 
 		nx = agent.getCuPosX() + agent.getChangeX();
@@ -41,9 +39,15 @@ public class ArtificialIntelegence {
 		
 		
 		
-		if(cell.isContainGold()) return Action.GRAB_GOLD;
+		if(cell.isContainGold()) {
+			cell.removeGold();
+			return Action.GRAB_GOLD;
+		}
 		
-		if(nx>=0 && nx<util.ROW && ny>=0 && ny<util.COL) {
+		
+		Action ac = sendAction();
+		
+		/*if(nx>=0 && nx<util.ROW && ny>=0 && ny<util.COL) {
 			
 			Cell NextCell = aiBoard[agent.getCuPosX()+agent.getChangeX()][agent.getCuPosY()+agent.getChangeY()];
 			
@@ -51,10 +55,11 @@ public class ArtificialIntelegence {
 
 			//if(!NextCell.isContainPit() && !NextCell.isContainWampus() && NextCell.isExplore() ) return Action.TURN_LEFT;
 			
-			/*if(NextCell.isExplore()  && ( cell.isContainBreeze() || cell.isContainStench() ) ) {
+			if(NextCell.isExplore()  && ( cell.isContainBreeze() || cell.isContainStench() ) ) {
 				 return Action.GO_FORWARD;
-			}*/
+			}
 			//if(cell.isExplore() && NextCell.isExplore())  return Action.TURN_LEFT;
+			
 			if(!NextCell.isContainPit() && !NextCell.isContainWampus() && !NextCell.isExplore()) return Action.GO_FORWARD;
 			
 			else if(count>2 && NextCell.isExplore() ) {
@@ -69,24 +74,24 @@ public class ArtificialIntelegence {
 				return Action.TURN_LEFT;
 			}
 			
-		}
+		}*/
 		count++;
-		return Action.TURN_LEFT;
+		return ac;
 	}
 	
 	
 	
 	
 	public void updateAdjacentCell() {
-		// TODO Auto-generated method stub
+		
 		Cell cell = aiBoard[agent.getCuPosX()][agent.getCuPosY()];
 		
-		System.out.println(agent.getCuPosX()   + "        "+agent.getCuPosY());
+		//System.out.println(agent.getCuPosX()   + "        "+agent.getCuPosY());
 		
 		if(!cell.isContainBreeze()) {
 			
 			int ax,ay;
-			cell.setContainPit(false);
+			//cell.setContainPit(false);
 			
 			for(int i=0;i<4;i++) {
 				
@@ -123,8 +128,9 @@ public class ArtificialIntelegence {
 		}
 	}
 
+	
+	
 	private void intializeBoard() {
-		// TODO Auto-generated method stub
 		
 		for(int i=0;i<util.ROW;i++) {
 			
@@ -143,6 +149,247 @@ public class ArtificialIntelegence {
 		//aiBoard[agent.getCuPosX()][agent.getCuPosY()] = ubc.getAiCell();
 		
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	public Action sendAction() {
+		
+		double front = getForwardValue()+1;
+		double left = getLeftValue();
+		double right = getRightValue();
+		
+		
+		
+		
+		TreeMap<Double, Action> actionMap = new TreeMap<>();
+		
+		actionMap.put(front, Action.GO_FORWARD);
+		actionMap.put(left, Action.TURN_LEFT);
+		actionMap.put(right, Action.TURN_RIGHT);
+		
+		System.out.println(front+ "     ");
+		
+		for(double k: actionMap.keySet() ) System.out.println(k+ "     "+actionMap.get(k));
+		
+		
+		double key = actionMap.lastKey();
+		
+		return actionMap.get(key);
+		
+	}
+
+	private double getForwardValue() {
+		// TODO Auto-generated method stub
+		
+		int nx = agent.getCuPosX()+agent.getChangeX();
+		int ny = agent.getCuPosY()+agent.getChangeY();
+		
+		if( nx>=0 && nx<util.ROW && ny>=0 && ny<util.COL ) {
+			
+			Cell cell = aiBoard[nx][ny];
+			
+			if(cell.isExplore()) return 2/cell.getCount();
+			
+			else if(!cell.isExplore()) {
+				
+				if(!cell.isContainPit() && !cell.isContainWampus()) return 5;
+				
+				else return -2;
+				
+			}
+			
+		}
+		
+		return -1;
+	}
+	
+	public double getLeftValue() {
+		
+		int changeX = 0,changeY=0;
+		Direction direction;
+		
+		switch (agent.currentDirection) {
+		
+		case NORTH:
+			direction =  Direction.WEST;
+			break;
+			
+		case EAST:
+			direction =  Direction.NORTH;
+			break;
+			
+		case SOUTH:
+			direction =  Direction.EAST;
+			break;
+			
+		default:
+			direction =  Direction.SOUTH;
+			break;
+		}
+		
+		switch (direction) {
+		
+		case NORTH:
+			changeX = -1;
+			changeY = 0;
+			
+			break;
+			
+		case EAST:
+			changeX = 0;
+			changeY = 1;
+			
+			break;
+			
+		case SOUTH:
+			changeX = 1;
+			changeY = 0;
+			
+			break;
+			
+		case WEST:
+			changeX = 0;
+			changeY = -1;
+			
+			break;
+			
+		default:
+			break;
+	
+		}
+		
+		int nx = agent.getCuPosX()+changeX;
+		int ny = agent.getCuPosY()+changeY;
+		
+		if( nx>=0 && nx<util.ROW && ny>=0 && ny<util.COL ) {
+			
+			Cell cell = aiBoard[nx][ny];
+			
+			if(cell.isExplore()) return 2/cell.getCount();
+			
+			else if(!cell.isExplore()) {
+				
+				if(!cell.isContainPit() && !cell.isContainWampus()) return 5;
+				
+				else return -2;
+				
+			}
+			
+		}
+		
+		return -1;
+		
+	}
+	
+	
+	public double getRightValue() {
+		
+		int changeX = 0,changeY=0;
+		Direction direction;
+		
+		switch (agent.currentDirection) {
+		
+		case NORTH:
+			direction =  Direction.EAST;
+			break;
+	
+		case EAST:
+			direction =  Direction.SOUTH;
+			break;
+			
+		case SOUTH:
+			direction =  Direction.WEST;
+			break;
+			
+		default:
+			direction =  Direction.NORTH;
+			break;
+		}
+		
+		switch (direction) {
+		
+		case NORTH:
+			changeX = -1;
+			changeY = 0;
+			
+			break;
+			
+		case EAST:
+			changeX = 0;
+			changeY = 1;
+			
+			break;
+			
+		case SOUTH:
+			changeX = 1;
+			changeY = 0;
+			
+			break;
+			
+		case WEST:
+			changeX = 0;
+			changeY = -1;
+			
+			break;
+			
+		default:
+			break;
+	
+		}
+		
+		int nx = agent.getCuPosX()+changeX;
+		int ny = agent.getCuPosY()+changeY;
+		
+		if( nx>=0 && nx<util.ROW && ny>=0 && ny<util.COL ) {
+			
+			Cell cell = aiBoard[nx][ny];
+			
+			if(cell.isExplore()) return 2/cell.getCount();
+			
+			else if(!cell.isExplore()) {
+				
+				if(!cell.isContainPit() && !cell.isContainWampus()) return 5;
+				
+				else return -2;
+				
+			}
+			
+		}
+		
+		return -1;
+		
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 
 }

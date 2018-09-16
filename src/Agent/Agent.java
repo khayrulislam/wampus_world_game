@@ -7,7 +7,7 @@ public class Agent {
 
 	private static Agent agent= null;
 	
-	private Direction currentDirection;
+	public Direction currentDirection;
 	
 	private String imagePath;
 	

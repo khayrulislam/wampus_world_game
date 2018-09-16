@@ -10,8 +10,16 @@ public class Cell {
 	
 	private boolean isExplore,containWampus,containPit;
 	
+	int count=1;
 	
+	public int getCount() {
+		return count;
+	}
 	
+	public void increment() {
+		count++;
+	}
+
 	private ArrayList<String> cellEffect = new ArrayList<>();
 	
 	public Cell(String currentStatus,boolean isExplore) {
@@ -64,6 +72,10 @@ public class Cell {
 	
 	public boolean isContainGold() {
 		return cellEffect.contains(util.GLITTER);
+	}
+	
+	public void removeGold() {
+		if(cellEffect.contains(util.GLITTER))cellEffect.remove(util.GLITTER);
 	}
 	
 	public boolean isContainStench() {
