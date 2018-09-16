@@ -8,15 +8,39 @@ public class Cell {
 	
 	private String currentStatus;
 	
-	private boolean isExplore;
+	private boolean isExplore,containWampus,containPit;
+	
+	
 	
 	private ArrayList<String> cellEffect = new ArrayList<>();
 	
 	public Cell(String currentStatus,boolean isExplore) {
 		this.currentStatus = currentStatus;
 		this.isExplore = isExplore;
+		containWampus = true;
+		containPit = true;
 	}
 	
+
+	public void setContainWampus(boolean containWampus) {
+		this.containWampus = containWampus;
+	}
+
+
+	public void setContainPit(boolean containPit) {
+		this.containPit = containPit;
+	}
+
+
+	public boolean isContainWampus() {
+		return containWampus;
+	}
+
+
+	public boolean isContainPit() {
+		return containPit;
+	}
+
 
 	public String getCurrentStatus() {
 		return currentStatus;

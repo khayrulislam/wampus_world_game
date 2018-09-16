@@ -10,6 +10,7 @@ import java.util.Random;
 import java.util.ResourceBundle;
 
 import Agent.Agent;
+import Ai.ArtificialIntelegence;
 import Ai.Cell;
 import application.*;
 import Util.util;
@@ -73,9 +74,13 @@ public class UserBoardController implements Initializable {
 	
 	private int goldCount,arrowCount,changeX,changeY;
 	
-	private Cell AiCell;
+	//private Cell AiCell;
 	
 	private Agent agent;
+	
+	private Thread threah;
+	
+	int i=0;
 	
 	@SuppressWarnings("static-access")
 	@Override
@@ -84,6 +89,8 @@ public class UserBoardController implements Initializable {
 		
 		WampusWorldGenerator wwg = new WampusWorldGenerator();
 		ArrayList< ArrayList< WorldCell > > wamWorld = wwg.getWampusWorld();
+		
+		ArtificialIntelegence ai = new ArtificialIntelegence();
 		
 		goldCount = util.NUMBER_OF_GOLD;
 		changeGoldText();
@@ -113,6 +120,86 @@ public class UserBoardController implements Initializable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		
+		threah = new Thread(new Runnable() {
+			
+			
+			
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				while(true) {
+					
+					Platform.runLater(new Runnable()
+					{
+					    @Override
+					    public void run()
+					    {
+					    	try {
+					    		
+					    //startAgent();
+					    		
+								Action  action = ai.getAction();
+								
+								if(action==Action.GO_FORWARD) forwardActionExecute();
+								else if(action==Action.GRAB_GOLD) enterActionExecute();
+								else if(action==Action.TURN_LEFT) leftActionExecute();
+								else if(action==Action.TURN_RIGHT) rightActionExecute();
+								
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							i++;
+
+					    }
+
+						/*private void startAgent() {
+							// TODO Auto-generated method stub
+							
+							ai.updateAdjacentCell();
+							
+							for( int i=0;i<4;i++ ) {
+							
+								
+								Cell cell = ArtificialIntelegence.aiBoard[agent.getCuPosX()][agent.getCuPosY()];
+
+
+								int ax = agent.getCuPosX() + util.x[i];
+								int ay = agent.getCuPosY() + util.y[i];
+								
+								if( ax>=0 && ax<util.ROW && ay>=0 && ay<util.COL ) {
+									
+									
+									
+								}
+								
+								
+								
+								
+								
+							}
+							
+						}
+					    
+					  */
+					});
+					
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+					
+				}
+				
+			}
+		}); 
+		
+		threah.start();
 		
 	}
 	
@@ -211,17 +298,20 @@ public class UserBoardController implements Initializable {
 	private void updateAiCell(WorldCell worldCell) {
 		
 		Cell cell = new Cell(util.SAFE,true);
-		
+	
 		for(String effect: worldCell.cellEffectList) cell.insertEffect(effect);
 		
-		AiCell = cell;
-	
+		if( !cell.isContainBreeze() && !cell.isContainStench() ) {
+			
+			cell.setContainWampus(false);
+			cell.setContainPit(false);
+					
+		}
+		
+		ArtificialIntelegence.aiBoard[agent.getCuPosX()][agent.getCuPosY()] = cell;
+		
 	}
 	
-	public Cell getAiCell() {
-		return AiCell;
-	}
-
 
 	public void leftAction(ActionEvent event) throws IOException {
 		
@@ -231,7 +321,7 @@ public class UserBoardController implements Initializable {
 	
 	
 
-	private void leftActionExecute() throws IOException {
+	public void leftActionExecute() throws IOException {
 		// TODO Auto-generated method stub
 		buttonDisable(true);
 		
@@ -268,9 +358,11 @@ public class UserBoardController implements Initializable {
 	}
 	
 	
-	private void forwardActionExecute() throws IOException {
+	public void forwardActionExecute() throws IOException {
 		// TODO Auto-generated method stub
 		buttonDisable(true);
+		
+		System.out.println("forward action call");
 		
 		if(agent.agentMoveForward() ) makeTransition();
 		
@@ -413,10 +505,6 @@ public class UserBoardController implements Initializable {
 			}
 			
 			
-			
-			
-			
-	
 			
 		}
 		

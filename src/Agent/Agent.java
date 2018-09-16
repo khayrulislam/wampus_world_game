@@ -120,16 +120,7 @@ public class Agent {
 		
 		
 	}
-	
-/*	private void calculateNext() {
-		// TODO Auto-generated method stub
-		
-		this.nextX = this.cuPosX + this.changeX;
-		this.nextY = this.cuPosY + this.changeY;
-		
-		if()
-		
-	}*/
+
 
 	public boolean CheckIndexValidity() {
 		

@@ -7,6 +7,7 @@ import java.util.ResourceBundle;
 
 import com.sun.corba.se.spi.servicecontext.UEInfoServiceContext;
 
+import Ai.ArtificialIntelegence;
 import Util.util;
 import application.Main;
 import application.WampusWorldGenerator;
@@ -120,7 +121,8 @@ public class ChoiceController implements Initializable{
 		Main.window.centerOnScreen();
 		Main.window.show();
 		
-		
+		//ArtificialIntelegence ai = new ArtificialIntelegence(ubc);
+		//ai.startIntelegence();
 		
 		/*
 		Parent root = FXMLLoader.load(getClass().getResource("/View/UserBoard.fxml"));
