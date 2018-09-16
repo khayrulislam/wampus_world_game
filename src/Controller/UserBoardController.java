@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Random;
 import java.util.ResourceBundle;
+
+import Agent.Agent;
 import application.*;
 import Util.util;
 import javafx.application.Platform;
@@ -30,6 +32,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
@@ -67,11 +70,9 @@ public class UserBoardController implements Initializable {
 	private Label arrow;
 	
 	
-	private int cuPosX, cuPosY, preX,preY, facing, goldCount,arrowCount,changeX,changeY;
+	private int goldCount,arrowCount,changeX,changeY;
 	
-	private String imagePath;
-	
-	private Direction currentDirection;
+	private Agent agent;
 	
 	@SuppressWarnings("static-access")
 	@Override
@@ -79,21 +80,14 @@ public class UserBoardController implements Initializable {
 		// TODO Auto-generated method stub
 		
 		WampusWorldGenerator wwg = new WampusWorldGenerator();
-		
-		imagePath = util.EAST_DIR_IMAGE;
-		
-		
-		changeX=0;
-		changeY=1;
-		currentDirection = Direction.EAST;
-		
-		cuPosX = 0; cuPosY = 0; facing = 1; goldCount = util.NUMBER_OF_GOLD; arrowCount = util.NUMBER_OF_ARROW;
-		
-		gold.setText(Integer.toString(goldCount));
-		
-		arrow.setText(Integer.toString(arrowCount));
-		
 		ArrayList< ArrayList< WorldCell > > wamWorld = wwg.getWampusWorld();
+		
+		goldCount = util.NUMBER_OF_GOLD;
+		changeGoldText();
+		arrowCount = util.NUMBER_OF_ARROW;
+		changeArrowText();
+		
+		agent = Agent.getAgentInstance();
 		
 		
 		for(int i=0;i<util.ROW;i++) {
@@ -102,47 +96,7 @@ public class UserBoardController implements Initializable {
 				
 				WorldCell cell = wamWorld.get(i).get(j);
 				
-				StackPane sp = new StackPane();
-				
-				sp.getChildren().add(getImageView("/image/floor.png"));
-				
-				if( cell.getCellEffect()!= null && !cell.getCellEffect().equals(util.GLITTER) ) {
-					
-					Label label = new Label(cell.getCellEffect());
-					label.setTextFill(Color.web("#ffffff"));
-					sp.getChildren().add(label);
-				}
-				
-				if(cell.getCellElement().equals(util.WAMPUS)) sp.getChildren().add(getImageView("/image/wampus.png"));
-				
-				else if ( cell.getCellElement().equals(util.PIT) ) sp.getChildren().add(getImageView("/image/pit.png"));
-				
-				else if ( cell.getCellElement().equals(util.GOLD) ) sp.getChildren().add(getImageView("/image/gold.png"));
-				
-				if(i!=0 || j!=0) {
-					
-					sp.getChildren().add(getImageView("/image/wall.png"));
-					
-					cell.setIsVisited(false);
-				}
-				
-				else {
-					
-					sp.getChildren().add(getImageView(imagePath));
-					
-					cell.setIsVisited(true);
-				}
-				/*
-				grid.setRowIndex(sp, i);
-				grid.setColumnIndex(sp, j);
-				
-				grid.getChildren().add(sp);*/
-				
-				/*sp.getProperties().put("row", i);
-				sp.getProperties().put("col", j);
-				
-				grid.setConstraints(sp, j, i);*/
-				
+				StackPane sp  = getCellStack(cell);
 				sp.getProperties().put("info", cell);
 				grid.add(sp, i, j);
 				
@@ -150,9 +104,51 @@ public class UserBoardController implements Initializable {
 			
 		}
 		
+		try {
+			updateCurrentAgent();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	
 	
+	private void changeArrowText() {
+		// TODO Auto-generated method stub
+		arrow.setText(Integer.toString(arrowCount));
+	}
+
+
+	private StackPane getCellStack(WorldCell worldCell) {
+		// TODO Auto-generated method stub
+
+		StackPane sp = new StackPane();
+		
+		sp.getChildren().add(getImageView(util.CELL_FLOOR_IMAGE));
+		
+		if( worldCell.getCellEffect()!= null && ! worldCell.getCellEffect().equals(util.GLITTER) ) {
+			
+			Label label = new Label( worldCell.getCellEffect() );
+			label.setTextFill(Color.web("#ffffff"));
+			sp.getChildren().add(label);
+		}
+		
+		if(worldCell.getCellElement().equals(util.WAMPUS)) sp.getChildren().add(getImageView(util.WAMPUS_IMAGE));
+		
+		else if ( worldCell.getCellElement().equals(util.PIT) ) sp.getChildren().add(getImageView(util.PIT_IMAGE));
+		
+		else if ( worldCell.getCellElement().equals(util.GOLD) ) sp.getChildren().add(getImageView(util.GOLD_IMAGE));
+		
+		sp.getChildren().add(getImageView(util.WALL_IMAGE));
+		
+		
+		
+		return sp;
+		
+	}
+
+
 	private ImageView getImageView(String path) {
 		
 		Image image = new Image(path);
@@ -168,45 +164,51 @@ public class UserBoardController implements Initializable {
 		
 		rightActionExecute();
 		
-		
 	}
 	
 	
-	private void rightActionExecute() {
+	private void rightActionExecute() throws IOException {
 		// TODO Auto-generated method stub
 		buttonDisable(true);
 		
-		currentDirection = getTheRightOfTheCurrentDirection(currentDirection);
+		agent.changeDirectionToRight();
 		
-		changeUpdatingCoordinate(currentDirection);
-		
-		updateImage(currentDirection);
-		
-		System.out.println(cuPosX+"          "+cuPosY+"       "+changeX+"         "+changeY+"            "+currentDirection);
+		updateAgentRotation();
 		
 		buttonDisable(false);
 		
 	}
 
 
-	private void updateImage(Direction currentDirection) {
+	private void updateCurrentAgent() throws IOException {
 		// TODO Auto-generated method stub
-		
-		imagePath = getImagePath(currentDirection);
 		
 		StackPane curCellView;
 		
-		curCellView = getCellView(cuPosX, cuPosY);
+		curCellView = getCellView(agent.getCuPosX(), agent.getCuPosY());
 		
-		curCellView.getChildren().remove(curCellView.getChildren().size()-1);
+		WorldCell cell = (WorldCell) curCellView.getProperties().get("info");
 		
-		curCellView.getChildren().add(getImageView(imagePath));
+		//System.out.println( agent.getCuPosX()+"         "+agent.getCuPosY()  );
+		//System.out.println( cell.getX()+"         "+cell.getY()  );
+		
+		if(!cell.getIsVisited()) {
+			
+			curCellView.getChildren().remove(curCellView.getChildren().size()-1);
+			
+			if(cell.getCellElement().equals(util.WAMPUS) || cell.getCellElement().equals(util.PIT) ) terminateGame();
+			
+			cell.setIsVisited(true);
+			
+		}
+		
+		curCellView.getChildren().add(getImageView(agent.getImagePath()));
+		
 		
 	}
 
 
 	public void leftAction(ActionEvent event) throws IOException {
-		
 		
 		leftActionExecute();
 			
@@ -214,117 +216,37 @@ public class UserBoardController implements Initializable {
 	
 	
 
-	private void leftActionExecute() {
+	private void leftActionExecute() throws IOException {
 		// TODO Auto-generated method stub
 		buttonDisable(true);
 		
-		currentDirection = getTheLeftOfTheCurrentDirection(currentDirection);
+		agent.changeDirectionToLeft();
 		
-		changeUpdatingCoordinate(currentDirection);
-		
-		updateImage(currentDirection);
-		
-		System.out.println(cuPosX+"          "+cuPosY+"       "+changeX+"         "+changeY+"            "+currentDirection);
-		
+		updateAgentRotation();
+				
 		buttonDisable(false);
 	}
 
-
-	private Direction getTheLeftOfTheCurrentDirection(Direction currentDirection) {
+	
+	private void updateAgentRotation() {
 		// TODO Auto-generated method stub
+
+		StackPane curCellView;
 		
-		switch (currentDirection) {
-			case NORTH:
-				return Direction.WEST;
+		curCellView = getCellView(agent.getCuPosX(), agent.getCuPosY());
 		
-			case EAST:
-				return Direction.NORTH;
-			
-			case SOUTH:
-				return Direction.EAST;
-				
-			default:
-				return Direction.SOUTH;
-			
-		}
-		//return currentDirection;
+		WorldCell cell = (WorldCell) curCellView.getProperties().get("info");
+		
+		//System.out.println( agent.getCuPosX()+"         "+agent.getCuPosY()  );
+		//System.out.println( cell.getX()+"         "+cell.getY()  );
+		
+		curCellView.getChildren().remove(curCellView.getChildren().size()-1);
+		
+		curCellView.getChildren().add(getImageView(agent.getImagePath()));
 		
 	}
 
-	
-	private Direction getTheRightOfTheCurrentDirection(Direction currentDirection) {
-		// TODO Auto-generated method stub
-		
-		switch (currentDirection) {
-			case NORTH:
-				return Direction.EAST;
-		
-			case EAST:
-				return Direction.SOUTH;
-			
-			case SOUTH:
-				return Direction.WEST;
-				
-			default:
-				return Direction.NORTH;
-			
-		}
-		//return currentDirection;
-		
-	}
-	
-	private void changeUpdatingCoordinate(Direction currentDirection) {
-		// TODO Auto-generated method stub
-		
-		switch (currentDirection) {
-			
-			case NORTH:
-				changeX = -1;
-				changeY = 0;
-				break;
-				
-			case EAST:
-				changeX = 0;
-				changeY = 1;
-				break;
-				
-			case SOUTH:
-				changeX = 1;
-				changeY = 0;
-				break;
-				
-			case WEST:
-				changeX = 0;
-				changeY = -1;
-				break;
-				
-			default:
-				break;
-		
-		}
-		
-	}
-	
-	private String getImagePath(Direction currentDirection) {
-		// TODO Auto-generated method stub
-		
-		switch (currentDirection) {
-			case NORTH:
-				return util.NORTH_DIR_IMAGE;
-		
-			case EAST:
-				return util.EAST_DIR_IMAGE;
-			
-			case SOUTH:
-				return util.SOUTH_DIR_IMAGE;
-				
-			default:
-				return util.WEST_DRI_IMAGE;
-		}
-		
-	}
-	
-	
+
 	public void forwardAction(ActionEvent event) throws IOException {
 		
 		forwardActionExecute();
@@ -334,15 +256,8 @@ public class UserBoardController implements Initializable {
 	private void forwardActionExecute() throws IOException {
 		// TODO Auto-generated method stub
 		buttonDisable(true);
-		preX = cuPosX; preY = cuPosY;
 		
-		cuPosX += changeX;
-		cuPosY += changeY;
-		if(cuPosX>-1 && cuPosX<util.ROW && cuPosY>-1 && cuPosY<util.COL) makeTransition(cuPosX, cuPosY, imagePath);
-		else {
-			cuPosX -= changeX;
-			cuPosY -= changeY;
-		}
+		if(agent.agentMoveForward() ) makeTransition();
 		
 		buttonDisable(false);
 		
@@ -354,15 +269,30 @@ public class UserBoardController implements Initializable {
 		
 	}
 	
+	private void changeGoldText() {
+		
+		gold.setText(Integer.toString(goldCount));
+		
+	}
+	
 	
 	private void enterActionExecute() {
 		// TODO Auto-generated method stub
 
 		buttonDisable(true);
 		
+		grabGold();
+		
+		buttonDisable(false);
+		
+	}
+
+
+	private void grabGold() {
+		// TODO Auto-generated method stub
 		StackPane curCellView;
 		
-		curCellView = getCellView(cuPosX, cuPosY);
+		curCellView = getCellView(agent.getCuPosX(), agent.getCuPosY());
 		
 		WorldCell cell = (WorldCell) curCellView.getProperties().get("info");
 		
@@ -374,11 +304,9 @@ public class UserBoardController implements Initializable {
 			
 			goldCount--;
 			
-			gold.setText(Integer.toString(goldCount));
+			changeGoldText();
 			
 		}
-		
-		buttonDisable(false);
 		
 	}
 
@@ -393,78 +321,124 @@ public class UserBoardController implements Initializable {
 		
 		buttonDisable(true);
 		
-		StackPane attackingCellView = null;
+		//System.out.println( agent.getCuPosX()+"         "+agent.getCuPosY()  );
 		
-		attackingCellView = getCellView(cuPosX, cuPosY);
 		
-		Label lable = (Label) attackingCellView.getChildren().get(2);
+		StackPane attackingCellView =  getCellView(  (agent.getCuPosX()+agent.getChangeX() ), (agent.getCuPosY() + agent.getChangeY()) );
 		
-		WorldCell cell = (WorldCell) attackingCellView.getProperties().get("info");
+		//Label lable = (Label) attackingCellView.getChildren().get(2);
+		
+		if(agent.CheckIndexValidity()) {
+			
+			
+			
+			WorldCell attackingCell = (WorldCell) attackingCellView.getProperties().get("info");
+			
+			//System.out.println( attackingCell.getX()+"         "+attackingCell.getY()  );
+		
+			if(attackingCell.getCellElement().equals(util.WAMPUS)) {
+				
+				attackingCellView.getChildren().remove(attackingCellView.getChildren().size()-2);
+				
+				attackingCell.setCellElement(util.EMPTY);
+				
+				removeAdjacentCellEffect(attackingCell);
+				
+				arrowCount--;
+				
+				changeArrowText();
+				
+			}
+			
+			
+		}
+		
+
+		//System.out.println("dhbddddddddddhf"+attackingCell.getCellElement());
+		
+		
+	
 		
 		buttonDisable(false);
 		
 	}
 
 
+	private void removeAdjacentCellEffect(WorldCell AttackingCell) {
+		// TODO Auto-generated method stub
+		
+		for(int i=0;i<4;i++) {
+			
+			if (  (agent.getCuPosX()+agent.getChangeX() + util.x[i] ) >=0 &&
+					 (agent.getCuPosX()+agent.getChangeX() + util.x[i] ) < util.ROW &&
+					( (agent.getCuPosY() + agent.getChangeY()) + util.y[i] ) >=0 &&
+					( (agent.getCuPosY() + agent.getChangeY())+ util.y[i] ) < util.COL ) {
+				
+				
+
+				StackPane adjacentCellView = getCellView( (agent.getCuPosX()+agent.getChangeX() ) + util.x[i],
+						(agent.getCuPosY() + agent.getChangeY()) + util.y[i] );
+				
+				WorldCell adjacentCell = (WorldCell) adjacentCellView.getProperties().get("info");
+				
+				//System.out.println(util.x[i]+"     "+util.y[i]+"         "+adjacentCellView.getChildren().size());
+				
+				adjacentCellView.getChildren().remove(1);
+				
+				adjacentCell.removeCellEffect();
+				
+				if( adjacentCell.getCellEffect()!= null && ! adjacentCell.getCellEffect().equals(util.GLITTER) ) {
+					
+					Label label = new Label( adjacentCell.getCellEffect() );
+					label.setTextFill(Color.web("#ffffff"));
+					adjacentCellView.getChildren().add(1,label);
+				}
+				
+				
+			}
+			
+			
+			
+			
+			
+	
+			
+		}
+		
+	}
+
+
 	public void keyPressedAction(KeyEvent event) throws IOException {
 		
-		switch (event.getCode()) {
-        case UP:    
-        	forwardActionExecute();
-        	break;
-        case LEFT:  
-        	leftActionExecute();
-        	break;
-        case RIGHT: 
-        	rightActionExecute();
-        	break;	
-        case ENTER: 
-        	enterActionExecute();
-        	break;
-		}
+		
+		if(event.getCode() == KeyCode.UP) forwardActionExecute();
+		else if (event.getCode() == KeyCode.LEFT) leftActionExecute();
+		else if (event.getCode() == KeyCode.RIGHT) rightActionExecute();
+		else if (event.getCode() == KeyCode.ENTER) enterActionExecute();
+		else if (event.getCode() == KeyCode.SPACE) spaceActionExecute();
+		
     }
 		
-	
-	
-	private void rotateAgent(int cuPosX, int cuPosY, String path) {
+
+	private void makeTransition() throws IOException {
 		
-		StackPane curCellView;
+		removePreviousAgent();
 		
-		curCellView = getCellView(cuPosX, cuPosY);
+		updateCurrentAgent();
 		
-		curCellView.getChildren().remove(curCellView.getChildren().size()-1);
-		
-		curCellView.getChildren().add(getImageView(path));
 	}
+	
+	
+	private void removePreviousAgent() {
+		// TODO Auto-generated method stub
+		StackPane preCellView;
 
-
-	private void makeTransition(int cuPosX, int cuPosY,String path) throws IOException {
-		
-		StackPane curCellView,preCellView;
-		
-		preCellView = getCellView(preX, preY);
+		preCellView = getCellView(agent.getPreX(), agent.getPreY());
 		
 		preCellView.getChildren().remove(preCellView.getChildren().size()-1);
-		
-		curCellView = getCellView(cuPosX, cuPosY);
-		
-		WorldCell cell = (WorldCell) curCellView.getProperties().get("info");
-		
-		if(!cell.getIsVisited()) {
-			
-			curCellView.getChildren().remove(curCellView.getChildren().size()-1);
-			
-			if(cell.getCellElement().equals(util.WAMPUS) || cell.getCellElement().equals(util.PIT) ) terminateGame();
-			
-			cell.setIsVisited(true);
-			
-		}
-		
-		curCellView.getChildren().add(getImageView(path));
-		
 	}
-	
-	
+
+
 	private void terminateGame() throws IOException {
 		// TODO Auto-generated method stub
 		

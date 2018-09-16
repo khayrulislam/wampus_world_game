@@ -7,7 +7,11 @@ import Util.util;
 
 public class WorldCell {
 
-	private int x,y,count=0;
+	private int x;
+	
+	private int y;
+	
+	private int stenchCount=0;
 	
 	private boolean isVisited;
 	
@@ -35,7 +39,7 @@ public class WorldCell {
 	
 	public void setCellEffect(String effect) {
 		this.cellEffectList.add(effect);
-		if(util.STENCH.equals(effect)) count++;
+		if(util.STENCH.equals(effect)) stenchCount++;
 	}
 
 	public void setCellElement(String cellElement) {
@@ -43,11 +47,11 @@ public class WorldCell {
 	}
 
 	public int getX() {
-		return x;
+		return this.x;
 	}
 
 	public int getY() {
-		return y;
+		return this.y;
 	}
 
 	public String getCellElement() {
@@ -64,14 +68,13 @@ public class WorldCell {
 	
 	}
 	
-	public boolean removeCellEffect(String effect) {
+	public void removeCellEffect() {
 		
-		if(cellEffectList.contains(effect)) {
-			count--;
-			if(count==0)return cellEffectList.remove(effect);
-			else return true;
+		if(cellEffectList.contains(util.STENCH)) {
+			stenchCount--;
+			if(stenchCount==0) cellEffectList.remove(util.STENCH);
+			
 		}
-		else return false;
 		
 	}
 	

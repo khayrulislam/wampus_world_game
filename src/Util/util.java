@@ -46,6 +46,15 @@ public class util {
 	
 	public static final String WEST_DRI_IMAGE = "/image/player_facing_to_left.png";
 	
+	public static final String CELL_FLOOR_IMAGE = "/image/floor.png";
+	
+	public static final String WAMPUS_IMAGE = "/image/wampus.png";
+	
+	public static final String PIT_IMAGE = "/image/pit.png";
+	
+	public static final String GOLD_IMAGE = "/image/gold.png";
+	
+	public static final String WALL_IMAGE = "/image/wall.png";
 	
 	
 }
