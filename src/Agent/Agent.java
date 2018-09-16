@@ -11,7 +11,7 @@ public class Agent {
 	
 	private String imagePath;
 	
-	private int cuPosX, cuPosY, preX,preY,changeX,changeY;
+	private int cuPosX, cuPosY, preX,preY,changeX,changeY,nextX,nextY;
 	
 	
 	private Agent() {
@@ -118,8 +118,19 @@ public class Agent {
 		
 		}
 		
+		
 	}
 	
+/*	private void calculateNext() {
+		// TODO Auto-generated method stub
+		
+		this.nextX = this.cuPosX + this.changeX;
+		this.nextY = this.cuPosY + this.changeY;
+		
+		if()
+		
+	}*/
+
 	public boolean CheckIndexValidity() {
 		
 		if(  ( this.cuPosX + this.changeX ) >=0 && ( this.cuPosX + this.changeX ) < util.ROW && ( this.cuPosY + this.changeY ) >=0 && ( this.cuPosY + this.changeY ) < util.COL ) return true;

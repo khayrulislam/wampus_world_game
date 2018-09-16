@@ -17,7 +17,7 @@ public class WorldCell {
 	
 	private String cellElement;
 	
-	private HashSet<String> cellEffectList = new HashSet<>();
+	public HashSet<String> cellEffectList = new HashSet<>();
 	
 	public WorldCell(int x, int y, String cellElement) {
 		

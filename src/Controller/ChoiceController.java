@@ -5,6 +5,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
+import com.sun.corba.se.spi.servicecontext.UEInfoServiceContext;
+
 import Util.util;
 import application.Main;
 import application.WampusWorldGenerator;
@@ -107,14 +109,27 @@ public class ChoiceController implements Initializable{
 	
 	public void loadThird(ActionEvent event) throws IOException {
 		
+		FXMLLoader load = new FXMLLoader(getClass().getResource("/View/UserBoard.fxml"));
+		Parent root = load.load();
+		UserBoardController ubc = load.getController();
 		
-		Parent root = FXMLLoader.load(getClass().getResource("/View/UserBoard.fxml"));
 		Scene scene = new Scene(root);
 		scene.getStylesheets().add(getClass().getResource("/application/application.css").toExternalForm());
 		
 		Main.window.setScene(scene);
 		Main.window.centerOnScreen();
 		Main.window.show();
+		
+		
+		
+		/*
+		Parent root = FXMLLoader.load(getClass().getResource("/View/UserBoard.fxml"));
+		Scene scene = new Scene(root);
+		scene.getStylesheets().add(getClass().getResource("/application/application.css").toExternalForm());
+		
+		Main.window.setScene(scene);
+		Main.window.centerOnScreen();
+		Main.window.show();*/
 		
 	}
 }

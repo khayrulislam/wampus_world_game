@@ -10,6 +10,7 @@ import java.util.Random;
 import java.util.ResourceBundle;
 
 import Agent.Agent;
+import Ai.Cell;
 import application.*;
 import Util.util;
 import javafx.application.Platform;
@@ -71,6 +72,8 @@ public class UserBoardController implements Initializable {
 	
 	
 	private int goldCount,arrowCount,changeX,changeY;
+	
+	private Cell AiCell;
 	
 	private Agent agent;
 	
@@ -142,8 +145,6 @@ public class UserBoardController implements Initializable {
 		
 		sp.getChildren().add(getImageView(util.WALL_IMAGE));
 		
-		
-		
 		return sp;
 		
 	}
@@ -194,6 +195,7 @@ public class UserBoardController implements Initializable {
 		
 		if(!cell.getIsVisited()) {
 			
+			updateAiCell(cell);
 			curCellView.getChildren().remove(curCellView.getChildren().size()-1);
 			
 			if(cell.getCellElement().equals(util.WAMPUS) || cell.getCellElement().equals(util.PIT) ) terminateGame();
@@ -204,7 +206,20 @@ public class UserBoardController implements Initializable {
 		
 		curCellView.getChildren().add(getImageView(agent.getImagePath()));
 		
+	}
+	
+	private void updateAiCell(WorldCell worldCell) {
 		
+		Cell cell = new Cell(util.SAFE,true);
+		
+		for(String effect: worldCell.cellEffectList) cell.insertEffect(effect);
+		
+		AiCell = cell;
+	
+	}
+	
+	public Cell getAiCell() {
+		return AiCell;
 	}
 
 
@@ -288,7 +303,7 @@ public class UserBoardController implements Initializable {
 	}
 
 
-	private void grabGold() {
+	public void grabGold() {
 		// TODO Auto-generated method stub
 		StackPane curCellView;
 		

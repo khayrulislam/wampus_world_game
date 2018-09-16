@@ -56,5 +56,11 @@ public class util {
 	
 	public static final String WALL_IMAGE = "/image/wall.png";
 	
+	public static final String UNSAFE = "unsafe";
+	
+	public static final String SAFE = "safe";
+	
+	public static final String MAYBE = "maybe";
+	
 	
 }
