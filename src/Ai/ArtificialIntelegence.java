@@ -27,16 +27,16 @@ public class ArtificialIntelegence {
 	
 	public Action getAction() {
 		
-		int nx,ny;
+		//int nx,ny;
 		
 		updateAdjacentCell();
 		
 		
 		Cell cell = aiBoard[agent.getCuPosX()][agent.getCuPosY()];
-
+/*
 		nx = agent.getCuPosX() + agent.getChangeX();
 		ny = agent.getCuPosY() + agent.getChangeY();
-		
+		*/
 		
 		
 		if(cell.isContainGold()) {
@@ -166,13 +166,14 @@ public class ArtificialIntelegence {
 		double front = getForwardValue()+1;
 		double left = getLeftValue();
 		double right = getRightValue();
-		
+		double arrow = getArrowShootValue();
 		
 		
 		
 		TreeMap<Double, Action> actionMap = new TreeMap<>();
 		
 		if(front>-1)actionMap.put(front, Action.GO_FORWARD);
+		if(arrow!=0) actionMap.put(arrow, Action.SHOOT_ARROW);
 		actionMap.put(left, Action.TURN_LEFT);
 		actionMap.put(right, Action.TURN_RIGHT);
 		
@@ -185,6 +186,42 @@ public class ArtificialIntelegence {
 		
 		return actionMap.get(key);
 		
+	}
+
+	private double getArrowShootValue() {
+		// TODO Auto-generated method stub
+		
+		int stenchcount = 0;
+		
+		if(UserBoardController.arrowCount==1) {
+			
+			int nx = agent.getCuPosX() + agent.getChangeX();
+			int ny = agent.getCuPosY()+agent.getChangeY();
+			
+			if( nx>=0 && nx<util.ROW && ny>=0 && ny<util.COL ) {
+				
+				for(int i=0;i<4;i++) {
+					
+					int ax = nx+ util.x[i];
+					int ay = ny + util.y[i];
+					
+					if( ax>=0 && ax<util.ROW && ay>=0 && ay<util.COL ) {
+						
+						if(aiBoard[ax][ay].isContainStench())stenchcount++;
+						
+					}
+					
+					
+				}
+				
+			}
+			
+			
+			if(stenchcount>=3) return 10000;
+		}
+		
+		
+		return 0;
 	}
 
 	private double getForwardValue() {

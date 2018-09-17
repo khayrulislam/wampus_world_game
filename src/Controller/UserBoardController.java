@@ -72,8 +72,10 @@ public class UserBoardController implements Initializable {
 	private Label arrow;
 	
 	
-	private int goldCount,arrowCount,changeX,changeY;
+	private int goldCount,changeX,changeY;
 	
+	
+	public static int arrowCount; 
 	//private Cell AiCell;
 	
 	private Agent agent;
@@ -148,6 +150,7 @@ public class UserBoardController implements Initializable {
 								else if(action==Action.GRAB_GOLD) enterActionExecute();
 								else if(action==Action.TURN_LEFT) leftActionExecute();
 								else if(action==Action.TURN_RIGHT) rightActionExecute();
+								else if(action==Action.SHOOT_ARROW) spaceActionExecute();
 								
 							} catch (IOException e) {
 								// TODO Auto-generated catch block
@@ -189,7 +192,7 @@ public class UserBoardController implements Initializable {
 					});
 					
 					try {
-						Thread.sleep(1000);
+						Thread.sleep(100);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -453,6 +456,8 @@ public class UserBoardController implements Initializable {
 				attackingCellView.getChildren().remove(attackingCellView.getChildren().size()-2);
 				
 				attackingCell.setCellElement(util.EMPTY);
+				
+				ArtificialIntelegence.aiBoard[agent.getCuPosX()+agent.getChangeX()][agent.getCuPosY() + agent.getChangeY()].setContainWampus(false);
 				
 				removeAdjacentCellEffect(attackingCell);
 				
