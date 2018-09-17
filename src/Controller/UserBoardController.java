@@ -232,8 +232,8 @@ public class UserBoardController implements Initializable {
 		
 		Image image = new Image(path);
 		ImageView imageView = new ImageView(image);
-		imageView.setFitHeight(28);
-		imageView.setFitWidth(28);
+		imageView.setFitHeight(33);
+		imageView.setFitWidth(33);
 		
 		return imageView;
 	}
@@ -243,8 +243,8 @@ public class UserBoardController implements Initializable {
 		
 		Image image = new Image(path);
 		ImageView imageView = new ImageView(image);
-		imageView.setFitHeight(58);
-		imageView.setFitWidth(58);
+		imageView.setFitHeight(48);
+		imageView.setFitWidth(48);
 		
 		return imageView;
 	}
