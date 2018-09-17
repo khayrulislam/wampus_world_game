@@ -10,9 +10,9 @@ public class Cell {
 	
 	private boolean isExplore,containWampus,containPit;
 	
-	int count=1;
+	double count=1;
 	
-	public int getCount() {
+	public double getCount() {
 		return count;
 	}
 	

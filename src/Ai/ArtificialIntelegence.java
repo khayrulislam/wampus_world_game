@@ -172,11 +172,11 @@ public class ArtificialIntelegence {
 		
 		TreeMap<Double, Action> actionMap = new TreeMap<>();
 		
-		actionMap.put(front, Action.GO_FORWARD);
+		if(front>-1)actionMap.put(front, Action.GO_FORWARD);
 		actionMap.put(left, Action.TURN_LEFT);
 		actionMap.put(right, Action.TURN_RIGHT);
 		
-		System.out.println(front+ "     ");
+		//System.out.println(front+ "     ");
 		
 		for(double k: actionMap.keySet() ) System.out.println(k+ "     "+actionMap.get(k));
 		
@@ -197,19 +197,19 @@ public class ArtificialIntelegence {
 			
 			Cell cell = aiBoard[nx][ny];
 			
-			if(cell.isExplore()) return 2/cell.getCount();
+			if(cell.isExplore()) return (double) 200/cell.getCount();
 			
 			else if(!cell.isExplore()) {
 				
-				if(!cell.isContainPit() && !cell.isContainWampus()) return 5;
+				if(!cell.isContainPit() && !cell.isContainWampus()) return 500;
 				
-				else return -2;
+				else return -200;
 				
 			}
 			
 		}
 		
-		return -1;
+		return -100;
 	}
 	
 	public double getLeftValue() {
@@ -274,19 +274,19 @@ public class ArtificialIntelegence {
 			
 			Cell cell = aiBoard[nx][ny];
 			
-			if(cell.isExplore()) return 2/cell.getCount();
+			if(cell.isExplore()) return (double)200/cell.getCount();
 			
 			else if(!cell.isExplore()) {
 				
-				if(!cell.isContainPit() && !cell.isContainWampus()) return 5;
+				if(!cell.isContainPit() && !cell.isContainWampus()) return 500;
 				
-				else return -2;
+				else return -200;
 				
 			}
 			
 		}
 		
-		return -1;
+		return -100;
 		
 	}
 	
@@ -353,19 +353,19 @@ public class ArtificialIntelegence {
 			
 			Cell cell = aiBoard[nx][ny];
 			
-			if(cell.isExplore()) return 2/cell.getCount();
+			if(cell.isExplore()) return (double) 200/cell.getCount();
 			
 			else if(!cell.isExplore()) {
 				
-				if(!cell.isContainPit() && !cell.isContainWampus()) return 5;
+				if(!cell.isContainPit() && !cell.isContainWampus()) return 500;
 				
-				else return -2;
+				else return -200;
 				
 			}
 			
 		}
 		
-		return -1;
+		return -100;
 		
 		
 	}

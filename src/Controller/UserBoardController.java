@@ -41,7 +41,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Screen;
-import sun.net.www.content.audio.aiff;
 
 public class UserBoardController implements Initializable {
 
@@ -81,9 +80,9 @@ public class UserBoardController implements Initializable {
 	
 	private Thread threah;
 	
-	int i=0;
+	boolean flag = true;
 	
-	boolean flag=true;
+	int i=0;
 	
 	@SuppressWarnings("static-access")
 	@Override
@@ -293,10 +292,8 @@ public class UserBoardController implements Initializable {
 			cell.setIsVisited(true);
 			
 		}
-		else {
-			ArtificialIntelegence.aiBoard[agent.getCuPosX()][agent.getCuPosY()].increment();
-			System.out.println( "                 "+ArtificialIntelegence.aiBoard[agent.getCuPosX()][agent.getCuPosY()].getCount()  );
-		}
+		
+		//if(ArtificialIntelegence.aiBoard[agent.getCuPosX()][agent.getCuPosY()].isExplore()) ArtificialIntelegence.aiBoard[agent.getCuPosX()][agent.getCuPosY()].increment();
 		curCellView.getChildren().add(getImageView(agent.getImagePath()));
 		
 	}
@@ -314,9 +311,9 @@ public class UserBoardController implements Initializable {
 					
 		}
 		
-		cell.increment();
-		
 		ArtificialIntelegence.aiBoard[agent.getCuPosX()][agent.getCuPosY()] = cell;
+		
+		
 		
 	}
 	
@@ -398,15 +395,12 @@ public class UserBoardController implements Initializable {
 		
 		grabGold();
 		
-		//ArtificialIntelegence.aiBoard[agent.getCuPosX()][agent.getChangeY()].
-		
 		buttonDisable(false);
 		
 	}
 
 
 	public void grabGold() {
-		
 		// TODO Auto-generated method stub
 		StackPane curCellView;
 		
@@ -471,7 +465,11 @@ public class UserBoardController implements Initializable {
 			
 		}
 		
+
 		//System.out.println("dhbddddddddddhf"+attackingCell.getCellElement());
+		
+		
+	
 		
 		buttonDisable(false);
 		
@@ -536,6 +534,8 @@ public class UserBoardController implements Initializable {
 		
 		updateCurrentAgent();
 		
+		if(ArtificialIntelegence.aiBoard[agent.getCuPosX()][agent.getCuPosY()].isExplore()) 
+			ArtificialIntelegence.aiBoard[agent.getCuPosX()][agent.getCuPosY()].increment();
 	}
 	
 	
@@ -551,7 +551,7 @@ public class UserBoardController implements Initializable {
 
 	private void terminateGame() throws IOException {
 		// TODO Auto-generated method stub
-		flag=false;
+		flag = false;
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.setTitle("Confirmation Dialog");
 		alert.setHeaderText("The Game is over");
