@@ -48,22 +48,7 @@ public class UserBoardController implements Initializable {
 	private GridPane grid;
 	
 	@FXML
-	private Button upButton;
-
-	@FXML
-	private Button rightButton;
-	
-	@FXML
-	private Button leftButton;
-	
-	@FXML
-	private Button downButton;
-	
-	@FXML
-	private Button spaceButton;
-	
-	@FXML
-	private Button enterButton;
+	private GridPane grid2;
 	
 	@FXML 
 	private Label gold;
@@ -111,9 +96,10 @@ public class UserBoardController implements Initializable {
 				WorldCell cell = wamWorld.get(i).get(j);
 				
 				StackPane sp  = getCellStack(cell);
+				StackPane sp2  = getCellStack2(cell);
 				sp.getProperties().put("info", cell);
 				grid.add(sp, i, j);
-				
+				grid2.add(sp2, i, j);
 			}
 			
 		}
@@ -160,39 +146,10 @@ public class UserBoardController implements Initializable {
 
 					    }
 
-						/*private void startAgent() {
-							// TODO Auto-generated method stub
-							
-							ai.updateAdjacentCell();
-							
-							for( int i=0;i<4;i++ ) {
-							
-								
-								Cell cell = ArtificialIntelegence.aiBoard[agent.getCuPosX()][agent.getCuPosY()];
-
-
-								int ax = agent.getCuPosX() + util.x[i];
-								int ay = agent.getCuPosY() + util.y[i];
-								
-								if( ax>=0 && ax<util.ROW && ay>=0 && ay<util.COL ) {
-									
-									
-									
-								}
-								
-								
-								
-								
-								
-							}
-							
-						}
-					    
-					  */
 					});
 					
 					try {
-						Thread.sleep(100);
+						Thread.sleep(1000);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -214,6 +171,35 @@ public class UserBoardController implements Initializable {
 		arrow.setText(Integer.toString(arrowCount));
 	}
 
+	
+	private StackPane getCellStack2(WorldCell worldCell) {
+		// TODO Auto-generated method stub
+
+		StackPane sp = new StackPane();
+		
+		sp.getChildren().add(getImageView2(util.CELL_FLOOR_IMAGE));
+		
+		if( worldCell.getCellEffect()!= null && ! worldCell.getCellEffect().equals(util.GLITTER) ) {
+			
+			Label label = new Label( worldCell.getCellEffect() );
+			label.setTextFill(Color.web("#ffffff"));
+			label.setMinWidth(20);
+			label.setMinHeight(25);
+			sp.getChildren().add(label);
+		}
+		
+		if(worldCell.getCellElement().equals(util.WAMPUS)) sp.getChildren().add(getImageView2(util.WAMPUS_IMAGE));
+		
+		else if ( worldCell.getCellElement().equals(util.PIT) ) sp.getChildren().add(getImageView2(util.PIT_IMAGE));
+		
+		else if ( worldCell.getCellElement().equals(util.GOLD) ) sp.getChildren().add(getImageView2(util.GOLD_IMAGE));
+		
+		//sp.getChildren().add(getImageView2(util.WALL_IMAGE));
+		
+		return sp;
+		
+	}
+	
 
 	private StackPane getCellStack(WorldCell worldCell) {
 		// TODO Auto-generated method stub
@@ -241,6 +227,17 @@ public class UserBoardController implements Initializable {
 		
 	}
 
+	
+	private ImageView getImageView2(String path) {
+		
+		Image image = new Image(path);
+		ImageView imageView = new ImageView(image);
+		imageView.setFitHeight(28);
+		imageView.setFitWidth(28);
+		
+		return imageView;
+	}
+	
 
 	private ImageView getImageView(String path) {
 		
@@ -253,22 +250,17 @@ public class UserBoardController implements Initializable {
 	}
 	
 
-	public void rightAction(ActionEvent event) throws IOException {
-		
-		rightActionExecute();
-		
-	}
 	
 	
 	private void rightActionExecute() throws IOException {
 		// TODO Auto-generated method stub
-		buttonDisable(true);
+		//buttonDisable(true);
 		
 		agent.changeDirectionToRight();
 		
 		updateAgentRotation();
 		
-		buttonDisable(false);
+		//buttonDisable(false);
 		
 	}
 
@@ -321,23 +313,17 @@ public class UserBoardController implements Initializable {
 	}
 	
 
-	public void leftAction(ActionEvent event) throws IOException {
-		
-		leftActionExecute();
-			
-	}
-	
 	
 
 	public void leftActionExecute() throws IOException {
 		// TODO Auto-generated method stub
-		buttonDisable(true);
+		//buttonDisable(true);
 		
 		agent.changeDirectionToLeft();
 		
 		updateAgentRotation();
 				
-		buttonDisable(false);
+		//buttonDisable(false);
 	}
 
 	
@@ -358,31 +344,20 @@ public class UserBoardController implements Initializable {
 		curCellView.getChildren().add(getImageView(agent.getImagePath()));
 		
 	}
-
-
-	public void forwardAction(ActionEvent event) throws IOException {
-		
-		forwardActionExecute();
-	}
 	
 	
 	public void forwardActionExecute() throws IOException {
 		// TODO Auto-generated method stub
-		buttonDisable(true);
+		//buttonDisable(true);
 		
 		System.out.println("forward action call");
 		
 		if(agent.agentMoveForward() ) makeTransition();
 		
-		buttonDisable(false);
+		//buttonDisable(false);
 		
 	}
 
-	public void enterAction(ActionEvent event) {
-		
-		enterActionExecute();
-		
-	}
 	
 	private void changeGoldText() {
 		
@@ -394,11 +369,11 @@ public class UserBoardController implements Initializable {
 	private void enterActionExecute() {
 		// TODO Auto-generated method stub
 
-		buttonDisable(true);
+		///buttonDisable(true);
 		
 		grabGold();
 		
-		buttonDisable(false);
+		//buttonDisable(false);
 		
 	}
 
@@ -426,15 +401,10 @@ public class UserBoardController implements Initializable {
 	}
 
 
-	public void spaceAction(ActionEvent event) {
-		
-		spaceActionExecute();
-		
-	}
 	
 	private void spaceActionExecute() {
 		
-		buttonDisable(true);
+		//buttonDisable(true);
 		
 		//System.out.println( agent.getCuPosX()+"         "+agent.getCuPosY()  );
 		
@@ -476,7 +446,7 @@ public class UserBoardController implements Initializable {
 		
 	
 		
-		buttonDisable(false);
+		//buttonDisable(false);
 		
 	}
 
@@ -584,16 +554,6 @@ public class UserBoardController implements Initializable {
 	}
 
 
-	private void buttonDisable(boolean value) {
-		
-
-		leftButton.setDisable(value);
-		upButton.setDisable(value);
-		rightButton.setDisable(value);
-		enterButton.setDisable(value);
-		spaceButton.setDisable(value);
-		
-	}
 	
 	private StackPane getCellView(int row,int col) {
 		
